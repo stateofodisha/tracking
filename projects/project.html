@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Project — State of Odisha Tracker</title>
+<link rel="stylesheet" href="../assets/style.css">
+<style>
+  .detail-wrap{ max-width:760px; margin:0 auto; padding:28px 20px 70px; position:relative; z-index:1; }
+  .back-link{ display:inline-flex; align-items:center; gap:6px; font-size:13px; font-weight:700; color:var(--text-sub); margin-bottom:20px; }
+  .back-link svg{ width:14px; height:14px; stroke:currentColor; fill:none; stroke-width:2.4; }
+  .detail-card{ background:var(--bg-elev); border:1px solid var(--border); border-radius:20px; padding:34px 28px; box-shadow:var(--shadow); text-align:center; }
+  .detail-card .cat{ font-size:11px; font-weight:800; letter-spacing:1px; text-transform:uppercase; color:var(--red); }
+  .detail-card h1{ font-size:clamp(22px,5vw,30px); font-weight:900; margin-top:10px; line-height:1.25; text-transform:uppercase; }
+  .detail-card .loc{ margin-top:8px; font-size:13px; color:var(--text-sub); }
+  .counter{ margin-top:26px; }
+  .counter .num{ font-weight:900; font-size:clamp(52px,15vw,84px); line-height:.9; color:var(--red); letter-spacing:-2px; }
+  .counter .word{ font-weight:900; font-size:15px; letter-spacing:1px; text-transform:uppercase; color:var(--red); margin-top:6px; }
+  .summary{ margin-top:18px; font-size:14.5px; color:var(--text-sub); line-height:1.55; text-align:left; }
+  .mini-stats{ display:flex; gap:12px; margin-top:22px; }
+  .mini-stats .ms{ flex:1; background:var(--stat-bg); border-radius:10px; padding:12px 10px; }
+  .mini-stats .ms .mn{ font-weight:900; font-size:clamp(16px,3.6vw,20px); }
+  .mini-stats .ms .ml{ font-size:10.5px; font-weight:700; letter-spacing:.4px; text-transform:uppercase; color:var(--text-sub); margin-top:3px; }
+  .hashtag{ margin-top:18px; font-size:12px; font-weight:700; color:var(--text-sub); }
+  .timeline-section{ margin-top:30px; text-align:left; }
+  .tl-title{ font-weight:900; font-size:12px; letter-spacing:2px; text-transform:uppercase; color:var(--text-sub); margin-bottom:14px; text-align:center; }
+  .tl-row{ display:flex; gap:14px; padding:12px 0; border-bottom:1px solid var(--border); }
+  .tl-row:last-child{ border-bottom:none; }
+  .tl-dot{ width:11px; height:11px; border-radius:50%; background:var(--text); margin-top:5px; flex-shrink:0; }
+  .tl-date{ font-weight:800; font-size:12px; color:var(--text-sub); text-transform:uppercase; letter-spacing:.4px; }
+  .tl-desc{ font-weight:600; font-size:14.5px; margin-top:3px; line-height:1.4; }
+  .tl-badge{ display:inline-block; margin-top:6px; font-weight:800; font-size:10.5px; letter-spacing:.4px; padding:3px 9px; border-radius:5px; background:var(--stat-bg); }
+  .not-found{ text-align:center; padding:80px 20px; }
+</style>
+</head>
+<body>
+
+<div class="bg-layer"><div class="bg-wheel"><img src="../assets/wheel.svg" alt=""></div></div>
+
+<div class="detail-wrap">
+  <a class="back-link" href="../index.html">
+    <svg viewBox="0 0 24 24"><path d="M15 18l-6-6 6-6"/></svg>
+    All tracked projects
+  </a>
+
+  <button class="theme-toggle" id="themeToggle" aria-label="Toggle dark / light theme" style="float:right; margin-top:-56px;">
+    <svg class="icon-moon" viewBox="0 0 24 24"><path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/></svg>
+    <svg class="icon-sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/></svg>
+  </button>
+
+  <div id="content"></div>
+</div>
+
+<footer class="site-foot">
+  <div class="wheel-spin"><img src="../assets/wheel.svg" alt=""></div>
+  Independent public tracker of Odisha government project announcements.
+</footer>
+
+<script src="../assets/data.js"></script>
+<script>
+(function(){
+  "use strict";
+  var root = document.documentElement;
+  function applyTheme(t){ root.setAttribute("data-theme", t); try{ localStorage.setItem("soo-theme", t); }catch(e){} }
+  (function(){
+    var saved; try{ saved = localStorage.getItem("soo-theme"); }catch(e){}
+    if(!saved) saved = window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+    applyTheme(saved);
+  })();
+  document.getElementById("themeToggle").addEventListener("click", function(){
+    applyTheme(root.getAttribute("data-theme") === "dark" ? "light" : "dark");
+  });
+
+  function daysPassed(dateStr){
+    var start = new Date(dateStr + "T00:00:00");
+    var diff = Math.floor((new Date() - start) / 86400000);
+    return diff < 0 ? 0 : diff;
+  }
+  function formatDate(dateStr){
+    return new Date(dateStr + "T00:00:00").toLocaleDateString("en-IN", { day:"numeric", month:"short", year:"numeric" });
+  }
+
+  var id = new URLSearchParams(window.location.search).get("id");
+  var project = PROJECTS.filter(function(p){ return p.id === id; })[0];
+  var content = document.getElementById("content");
+
+  if(!project){
+    content.innerHTML = '<div class="not-found"><h1 style="font-weight:900;font-size:22px;">Project not found</h1>' +
+      '<p style="margin-top:10px;color:var(--text-sub);">This project isn\'t in the tracker yet.</p></div>';
+  } else {
+    document.title = project.title + " — State of Odisha Tracker";
+    var days = daysPassed(project.announcedOn);
+    var timeline = (project.timeline || []).map(function(t){
+      return '<div class="tl-row"><div class="tl-dot"></div><div>' +
+        '<div class="tl-date">' + t.date + '</div>' +
+        '<div class="tl-desc">' + t.text + '</div>' +
+        (t.badge ? '<span class="tl-badge">' + t.badge + '</span>' : '') +
+        '</div></div>';
+    }).join("");
+
+    content.innerHTML =
+      '<div class="detail-card">' +
+        '<span class="status-pill ' + project.status.type + '" style="font-size:12px;padding:7px 16px;">' + (project.status.label || project.status.type) + '</span>' +
+        '<h1>' + project.title + '</h1>' +
+        '<div class="loc">' + project.category + ' · ' + project.location + '</div>' +
+        '<div class="counter"><div class="num">' + days + '</div><div class="word">Days Since Announcement</div></div>' +
+        '<p class="summary">' + project.summary + '</p>' +
+        '<div class="mini-stats">' +
+          '<div class="ms"><div class="mn">' + formatDate(project.announcedOn) + '</div><div class="ml">Announced On</div></div>' +
+          (project.budget ? '<div class="ms"><div class="mn">' + project.budget + '</div><div class="ml">Budget</div></div>' : '') +
+        '</div>' +
+        (project.hashtag ? '<div class="hashtag">' + project.hashtag + '</div>' : '') +
+      '</div>' +
+      (timeline ? '<div class="timeline-section"><div class="tl-title">Timeline</div>' + timeline + '</div>' : '');
+  }
+})();
+</script>
+</body>
+</html>
