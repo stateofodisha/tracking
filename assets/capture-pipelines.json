@@ -1,0 +1,38 @@
+[
+  {
+    "id": "project-odisha-s-rs-24-700-crore-shipbuilding-cluster-rece-0gew",
+    "name": "odisha-s-rs-24-700-crore-shipbuilding-cluster-rece-0gew card",
+    "template": "odisha-square-1000-light",
+    "dataSource": "assets/data.js",
+    "selector": "",
+    "profileId": "default",
+    "projectId": "odisha-s-rs-24-700-crore-shipbuilding-cluster-rece-0gew",
+    "outputFmt": "png",
+    "createdAt": "2026-09-02T13:00:30Z",
+    "updatedAt": "2026-09-02T13:00:30Z"
+  },
+  {
+    "id": "project-odisha-s-rs-24-700-crore-shipbuilding-cluster-rece-od0i",
+    "name": "odisha-s-rs-24-700-crore-shipbuilding-cluster-rece-od0i card",
+    "template": "odisha-square-1000-light",
+    "dataSource": "assets/data.js",
+    "selector": "",
+    "profileId": "default",
+    "projectId": "odisha-s-rs-24-700-crore-shipbuilding-cluster-rece-od0i",
+    "outputFmt": "png",
+    "createdAt": "2026-09-02T13:00:21Z",
+    "updatedAt": "2026-09-02T13:00:21Z"
+  },
+  {
+    "id": "project-odisha-s-rs-24-700-crore-shipbuilding-cluster-rece-ortd",
+    "name": "odisha-s-rs-24-700-crore-shipbuilding-cluster-rece-ortd card",
+    "template": "odisha-square-1000-light",
+    "dataSource": "assets/data.js",
+    "selector": "",
+    "profileId": "default",
+    "projectId": "odisha-s-rs-24-700-crore-shipbuilding-cluster-rece-ortd",
+    "outputFmt": "png",
+    "createdAt": "2026-09-02T13:00:14Z",
+    "updatedAt": "2026-09-02T13:00:14Z"
+  }
+]
